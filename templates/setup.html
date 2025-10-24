@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup - Telegram Auto Status Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Setup Authentication</h1>
+            <p class="subtitle">Enter your phone number to get started</p>
+        </div>
+
+        <div class="setup-wizard">
+            <!-- Step 1: Phone Number -->
+            <div id="step1" class="wizard-step active">
+                <h2>Step 1: Enter Phone Number</h2>
+                <p>Enter your phone number with country code (e.g., +1234567890)</p>
+                <input type="tel" id="phone" placeholder="+1234567890" class="input-field">
+                <div id="phone-error" class="error-message"></div>
+                <button onclick="sendCode()" class="btn btn-primary" id="send-btn">Send Code</button>
+            </div>
+
+            <!-- Step 2: Verification Code -->
+            <div id="step2" class="wizard-step">
+                <h2>Step 2: Enter Verification Code</h2>
+                <p>Check your Telegram app for the verification code</p>
+                <input type="text" id="code" placeholder="12345" class="input-field">
+                <div id="code-error" class="error-message"></div>
+                
+                <!-- 2FA Password (shown if needed) -->
+                <div id="password-field" style="display: none;">
+                    <p>You have 2FA enabled. Please enter your password:</p>
+                    <input type="password" id="password" placeholder="2FA Password" class="input-field">
+                </div>
+                
+                <button onclick="verifyCode()" class="btn btn-primary" id="verify-btn">Verify Code</button>
+            </div>
+
+            <!-- Step 3: Success -->
+            <div id="step3" class="wizard-step">
+                <h2>✅ Authentication Successful!</h2>
+                <div class="success-box">
+                    <p><strong>Logged in as:</strong> <span id="user-name"></span></p>
+                    <p><strong>Username:</strong> @<span id="user-username"></span></p>
+                    <p><strong>Phone:</strong> <span id="user-phone"></span></p>
+                </div>
+                
+                <div class="session-info">
+                    <h3>Your Session String:</h3>
+                    <textarea id="session-string" readonly class="session-textarea"></textarea>
+                    <button onclick="copySession()" class="btn btn-secondary">📋 Copy Session</button>
+                </div>
+                
+                <div class="alert alert-success">
+                    <h3>✅ Session Saved Automatically!</h3>
+                    <p>Your session string has been automatically saved to your environment configuration.</p>
+                    <p>The bot will start automatically. You can now:</p>
+                    <ul>
+                        <li>View the bot status on the dashboard</li>
+                        <li>Customize your settings (name, auto-reply message)</li>
+                        <li>Deploy to Koyeb for 24/7 uptime</li>
+                    </ul>
+                </div>
+                
+                <a href="/" class="btn btn-primary">Go to Dashboard</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="/">← Back to Home</a> | 
+            <a href="/settings">⚙️ Settings</a>
+        </div>
+    </div>
+
+    <script>
+        let needsPassword = false;
+
+        async function sendCode() {
+            const phone = document.getElementById('phone').value;
+            const errorDiv = document.getElementById('phone-error');
+            const btn = document.getElementById('send-btn');
+            
+            errorDiv.textContent = '';
+            
+            if (!phone) {
+                errorDiv.textContent = 'Please enter your phone number';
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            
+            try {
+                const response = await fetch('/api/send-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('step1').classList.remove('active');
+                    document.getElementById('step2').classList.add('active');
+                } else {
+                    errorDiv.textContent = data.error || 'Failed to send code';
+                    btn.disabled = false;
+                    btn.textContent = 'Send Code';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Error: ' + error.message;
+                btn.disabled = false;
+                btn.textContent = 'Send Code';
+            }
+        }
+
+        async function verifyCode() {
+            const code = document.getElementById('code').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('code-error');
+            const btn = document.getElementById('verify-btn');
+            
+            errorDiv.textContent = '';
+            
+            if (!code) {
+                errorDiv.textContent = 'Please enter the verification code';
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Verifying...';
+            
+            try {
+                const response = await fetch('/api/verify-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show success step
+                    document.getElementById('user-name').textContent = data.user.name;
+                    document.getElementById('user-username').textContent = data.user.username || 'N/A';
+                    document.getElementById('user-phone').textContent = data.user.phone;
+                    document.getElementById('session-string').value = data.session;
+                    
+                    document.getElementById('step2').classList.remove('active');
+                    document.getElementById('step3').classList.add('active');
+                } else if (data.needs_password) {
+                    // Show password field
+                    document.getElementById('password-field').style.display = 'block';
+                    errorDiv.textContent = data.error;
+                    btn.disabled = false;
+                    btn.textContent = 'Verify Code';
+                } else {
+                    errorDiv.textContent = data.error || 'Verification failed';
+                    btn.disabled = false;
+                    btn.textContent = 'Verify Code';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Error: ' + error.message;
+                btn.disabled = false;
+                btn.textContent = 'Verify Code';
+            }
+        }
+
+        function copySession() {
+            const textarea = document.getElementById('session-string');
+            textarea.select();
+            document.execCommand('copy');
+            
+            const btn = event.target;
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => {
+                btn.textContent = '📋 Copy Session';
+            }, 2000);
+        }
+        
+        // Allow Enter key to submit
+        document.getElementById('phone').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendCode();
+        });
+        
+        document.getElementById('code').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') verifyCode();
+        });
+        
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') verifyCode();
+        });
+    </script>
+</body>
+</html>

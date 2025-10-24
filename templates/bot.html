@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Status - Telegram Auto Status Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Bot Status</h1>
+            <p class="subtitle">Your Telegram bot is configured and ready</p>
+        </div>
+
+        <div class="alert alert-success">
+            <h3>✅ Bot is Running!</h3>
+            <p>Your bot is monitoring your Telegram status and will automatically update your name.</p>
+        </div>
+
+        <div class="bot-info">
+            <h2>How It Works</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>📱 Name Updates</h3>
+                    <p>When you're <strong>online</strong>:</p>
+                    <code>Hashir ( Online )</code>
+                    <p>When you're <strong>offline</strong>:</p>
+                    <code>Hashir ( Offline )</code>
+                </div>
+                
+                <div class="info-card">
+                    <h3>💬 Auto-Reply</h3>
+                    <p>When you're offline and someone messages you:</p>
+                    <code>"I'll respond when I get online"</code>
+                    <p class="small">Auto-reply resets when you come back online</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>⚙️ Configuration</h3>
+                    <p><strong>Base Name:</strong> Hashir</p>
+                    <p><strong>Check Interval:</strong> Every 30 seconds</p>
+                    <p><strong>Auto-Reply:</strong> Enabled</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>🚀 Deployment</h3>
+                    <p>Deploy to Koyeb for 24/7 uptime:</p>
+                    <a href="/docs" class="btn btn-small">View Instructions</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="customization">
+            <h2>Customize Your Bot</h2>
+            <p>Want to change your bot's name or auto-reply message?</p>
+            <a href="/settings" class="btn btn-primary">⚙️ Go to Settings</a>
+        </div>
+
+        <div class="footer">
+            <a href="/">← Back to Home</a> | 
+            <a href="/settings">⚙️ Settings</a> | 
+            <a href="/docs">📚 Documentation</a>
+        </div>
+    </div>
+</body>
+</html>

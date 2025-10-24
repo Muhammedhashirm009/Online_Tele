@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - Telegram Auto Status Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Documentation</h1>
+            <p class="subtitle">Everything you need to know</p>
+        </div>
+
+        <div class="docs-section">
+            <h2>Quick Start</h2>
+            <ol>
+                <li>Add API_ID and API_HASH to Replit Secrets from <a href="https://my.telegram.org" target="_blank">my.telegram.org</a></li>
+                <li>Go to <a href="/setup">Setup Page</a> and enter your phone number</li>
+                <li>Enter the verification code from Telegram</li>
+                <li>Copy the session string and add it to Replit Secrets as SESSION_SECRET</li>
+                <li>Your bot is now running!</li>
+            </ol>
+        </div>
+
+        <div class="docs-section">
+            <h2>Deploy to Koyeb</h2>
+            <p>For 24/7 uptime, deploy your bot to Koyeb:</p>
+            <ol>
+                <li>Push your code to GitHub</li>
+                <li>Create a new service on <a href="https://koyeb.com" target="_blank">Koyeb</a></li>
+                <li>Connect your GitHub repository</li>
+                <li>Set environment variables: API_ID, API_HASH, SESSION_SECRET, BASE_NAME</li>
+                <li>Deploy!</li>
+            </ol>
+            <p>For detailed instructions, see the KOYEB_DEPLOYMENT.md file.</p>
+        </div>
+
+        <div class="docs-section">
+            <h2>Environment Variables</h2>
+            <table class="docs-table">
+                <tr>
+                    <th>Variable</th>
+                    <th>Required</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td><code>API_ID</code></td>
+                    <td>Yes</td>
+                    <td>Telegram API ID from my.telegram.org</td>
+                </tr>
+                <tr>
+                    <td><code>API_HASH</code></td>
+                    <td>Yes</td>
+                    <td>Telegram API Hash from my.telegram.org</td>
+                </tr>
+                <tr>
+                    <td><code>SESSION_SECRET</code></td>
+                    <td>Yes</td>
+                    <td>Session string generated during setup</td>
+                </tr>
+                <tr>
+                    <td><code>BASE_NAME</code></td>
+                    <td>No</td>
+                    <td>Your name without status (default: Hashir)</td>
+                </tr>
+                <tr>
+                    <td><code>AUTO_REPLY_MESSAGE</code></td>
+                    <td>No</td>
+                    <td>Auto-reply message (default: I'll respond when I get online)</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="docs-section">
+            <h2>Troubleshooting</h2>
+            <h3>Bot won't start</h3>
+            <ul>
+                <li>Check that all environment variables are set correctly</li>
+                <li>Make sure SESSION_SECRET is the full session string</li>
+                <li>Verify API_ID and API_HASH are from my.telegram.org</li>
+            </ul>
+            
+            <h3>Name not updating</h3>
+            <ul>
+                <li>Check the console logs for errors</li>
+                <li>Make sure the bot has permission to update your profile</li>
+                <li>Wait 30-60 seconds for the status check cycle</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <a href="/">← Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

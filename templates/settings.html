@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Telegram Auto Status Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Bot Settings</h1>
+            <p class="subtitle">Customize your bot's behavior</p>
+        </div>
+
+        <div class="settings-form">
+            <h2>Customize Your Bot</h2>
+            
+            <div class="form-group">
+                <label for="base-name">Base Name</label>
+                <input type="text" id="base-name" class="input-field" 
+                       value="{{ base_name }}" 
+                       placeholder="Hashir">
+                <p class="help-text">Your name without status. Example: "Hashir" becomes "Hashir ( Online )"</p>
+            </div>
+
+            <div class="form-group">
+                <label for="auto-reply">Auto-Reply Message</label>
+                <textarea id="auto-reply" class="input-field" rows="3" 
+                          placeholder="I'll respond when I get online">{{ auto_reply }}</textarea>
+                <p class="help-text">Message sent to people who message you when you're offline</p>
+            </div>
+
+            <div id="settings-error" class="error-message"></div>
+            <div id="settings-success" class="success-message"></div>
+
+            <button onclick="saveSettings()" class="btn btn-primary" id="save-btn">💾 Save Settings</button>
+        </div>
+
+        <div class="info-box">
+            <h3>ℹ️ How It Works</h3>
+            <p>When you save these settings:</p>
+            <ul>
+                <li>They are saved to your environment variables</li>
+                <li>The bot will automatically restart to apply the changes</li>
+                <li>Your new settings will be active within a few seconds</li>
+            </ul>
+        </div>
+
+        <div class="current-settings">
+            <h2>Current Configuration</h2>
+            <table class="settings-table">
+                <tr>
+                    <th>Setting</th>
+                    <th>Current Value</th>
+                </tr>
+                <tr>
+                    <td><strong>Base Name</strong></td>
+                    <td>{{ base_name }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Auto-Reply Message</strong></td>
+                    <td>{{ auto_reply }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Status Check Interval</strong></td>
+                    <td>Every 30 seconds</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="footer">
+            <a href="/">← Back to Home</a> | 
+            <a href="/bot">🤖 Bot Status</a> | 
+            <a href="/docs">📚 Documentation</a>
+        </div>
+    </div>
+
+    <script>
+        async function saveSettings() {
+            const baseName = document.getElementById('base-name').value;
+            const autoReply = document.getElementById('auto-reply').value;
+            const errorDiv = document.getElementById('settings-error');
+            const successDiv = document.getElementById('settings-success');
+            const btn = document.getElementById('save-btn');
+            
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+            
+            if (!baseName) {
+                errorDiv.textContent = 'Base name is required';
+                return;
+            }
+            
+            if (!autoReply) {
+                errorDiv.textContent = 'Auto-reply message is required';
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+            
+            try {
+                const response = await fetch('/api/save-settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        base_name: baseName,
+                        auto_reply: autoReply
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    successDiv.textContent = '✅ ' + data.message;
+                    btn.textContent = '✅ Saved!';
+                    
+                    setTimeout(() => {
+                        btn.textContent = '💾 Save Settings';
+                        btn.disabled = false;
+                        location.reload();
+                    }, 1500);
+                } else {
+                    errorDiv.textContent = '❌ ' + (data.error || 'Failed to save settings');
+                    btn.disabled = false;
+                    btn.textContent = '💾 Save Settings';
+                }
+            } catch (error) {
+                errorDiv.textContent = '❌ Error: ' + error.message;
+                btn.disabled = false;
+                btn.textContent = '💾 Save Settings';
+            }
+        }
+    </script>
+</body>
+</html>

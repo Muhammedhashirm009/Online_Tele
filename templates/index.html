@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Auto Status Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Telegram Auto Status Bot</h1>
+            <p class="subtitle">Automatically update your Telegram name based on your online/offline status</p>
+        </div>
+
+        <div class="status-card">
+            <h2>Setup Status</h2>
+            <div class="status-item">
+                <span class="status-label">API Credentials:</span>
+                <span class="status-badge {% if api_configured %}success{% else %}error{% endif %}">
+                    {% if api_configured %}✅ Configured{% else %}❌ Not Set{% endif %}
+                </span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Session:</span>
+                <span class="status-badge {% if session_configured %}success{% else %}error{% endif %}">
+                    {% if session_configured %}✅ Configured{% else %}❌ Not Set{% endif %}
+                </span>
+            </div>
+        </div>
+
+        {% if not api_configured %}
+        <div class="alert alert-error">
+            <h3>⚠️ API Credentials Required</h3>
+            <p>You need to add your Telegram API credentials first:</p>
+            <ol>
+                <li>Visit <a href="https://my.telegram.org" target="_blank">my.telegram.org</a></li>
+                <li>Go to "API Development Tools"</li>
+                <li>Create an application and copy your API_ID and API_HASH</li>
+                <li>Add them to Replit Secrets (lock icon in sidebar)</li>
+            </ol>
+        </div>
+        {% elif not session_configured %}
+        <div class="alert alert-warning">
+            <h3>🔐 Authentication Required</h3>
+            <p>Your API credentials are set! Now you need to authenticate your Telegram account.</p>
+            <a href="/setup" class="btn btn-primary">Start Setup</a>
+        </div>
+        {% else %}
+        <div class="alert alert-success">
+            <h3>✅ Bot is Ready!</h3>
+            <p>Your Telegram bot is fully configured and running.</p>
+            <div style="display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
+                <a href="/bot" class="btn btn-primary">🤖 View Bot Status</a>
+                <a href="/settings" class="btn btn-primary">⚙️ Settings</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="features">
+            <h2>Features</h2>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">📱</div>
+                    <h3>Auto Name Update</h3>
+                    <p>Changes your name to "Hashir ( Online )" or "Hashir ( Offline )"</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💬</div>
+                    <h3>Auto Reply</h3>
+                    <p>Sends "I'll respond when I get online" when you're offline</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Real-time Monitoring</h3>
+                    <p>Checks your status every 30 seconds</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Cloud Ready</h3>
+                    <p>Deploy to Koyeb for 24/7 uptime</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="/settings">⚙️ Settings</a> | 
+            <a href="/docs">📚 Documentation</a> | 
+            <a href="https://github.com" target="_blank">💻 Source Code</a>
+        </div>
+    </div>
+</body>
+</html>

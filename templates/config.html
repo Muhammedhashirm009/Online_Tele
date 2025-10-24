@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure API - Telegram Auto Status Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Configure API Credentials</h1>
+            <p class="subtitle">Enter your Telegram API credentials</p>
+        </div>
+
+        <div class="alert alert-info">
+            <h3>📝 How to get your API credentials:</h3>
+            <ol>
+                <li>Visit <a href="https://my.telegram.org" target="_blank">my.telegram.org</a></li>
+                <li>Log in with your phone number</li>
+                <li>Go to "API Development Tools"</li>
+                <li>Create an application (if you haven't already)</li>
+                <li>Copy your <strong>API_ID</strong> and <strong>API_HASH</strong></li>
+                <li>Paste them below and click Save</li>
+            </ol>
+        </div>
+
+        <div class="setup-wizard">
+            <div class="wizard-step active">
+                <h2>Enter Your API Credentials</h2>
+                
+                <div class="form-group">
+                    <label for="api-id">API ID:</label>
+                    <input type="text" id="api-id" placeholder="12345678" class="input-field" value="{{ api_id or '' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="api-hash">API Hash:</label>
+                    <input type="text" id="api-hash" placeholder="abcdef1234567890abcdef1234567890" class="input-field" value="{{ api_hash or '' }}">
+                </div>
+                
+                <div id="error-message" class="error-message"></div>
+                <div id="success-message" class="success-message" style="display: none;"></div>
+                
+                <button onclick="saveConfig()" class="btn btn-primary" id="save-btn">Save Configuration</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="/">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        async function saveConfig() {
+            const apiId = document.getElementById('api-id').value.trim();
+            const apiHash = document.getElementById('api-hash').value.trim();
+            const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
+            const btn = document.getElementById('save-btn');
+            
+            errorDiv.textContent = '';
+            successDiv.style.display = 'none';
+            
+            if (!apiId || !apiHash) {
+                errorDiv.textContent = 'Please enter both API ID and API Hash';
+                return;
+            }
+            
+            if (!/^\d+$/.test(apiId)) {
+                errorDiv.textContent = 'API ID must be a number';
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+            
+            try {
+                const response = await fetch('/api/save-config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ api_id: apiId, api_hash: apiHash })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    successDiv.textContent = '✅ Configuration saved successfully! Redirecting...';
+                    successDiv.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                } else {
+                    errorDiv.textContent = data.error || 'Failed to save configuration';
+                    btn.disabled = false;
+                    btn.textContent = 'Save Configuration';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Error: ' + error.message;
+                btn.disabled = false;
+                btn.textContent = 'Save Configuration';
+            }
+        }
+        
+        document.getElementById('api-id').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') saveConfig();
+        });
+        
+        document.getElementById('api-hash').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') saveConfig();
+        });
+    </script>
+</body>
+</html>
