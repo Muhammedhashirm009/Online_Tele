@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  telegram-bot:
+    build: .
+    container_name: telegram-auto-status
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - API_ID=${API_ID}
+      - API_HASH=${API_HASH}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - BASE_NAME=${BASE_NAME:-Hashir}
+      - AUTO_REPLY_MESSAGE=${AUTO_REPLY_MESSAGE:-I'll respond when I get online}
+    volumes:
+      - ./sessions:/app/sessions
+      - ./logs:/app/logs
+    env_file:
+      - .env
